@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>星愿瓶 Star Wish Bottle</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+
+<body>
+  <main class="app">
+    <div class="paper-lines"></div>
+
+    <div class="doodle-bg">
+      <span class="doodle d-star d1">★</span>
+      <span class="doodle d-star d2">✦</span>
+      <span class="doodle d-star d3">✧</span>
+      <span class="doodle d-dot d4"></span>
+      <span class="doodle d-dot d5"></span>
+      <span class="doodle d-line d6"></span>
+      <span class="doodle d-line d7"></span>
+      <span class="doodle d-flower d8">✿</span>
+    </div>
+
+    <section class="hero">
+      <p class="small-title">anonymous emotional expression</p>
+      <h1>星愿瓶</h1>
+      <p class="subtitle">把不能说出口的话，折进一颗星星里。</p>
+    </section>
+
+    <section class="main-stage">
+      <aside class="info-card">
+        <h2>今天想写下什么？</h2>
+        <p>
+          在这里，你可以匿名写下愿望、烦恼、秘密或一句送给自己的话。
+          它会被折成一颗小星星，轻轻放进星愿瓶里。
+        </p>
+
+        <div class="stats">
+          <div>
+            <strong id="totalCount">0</strong>
+            <span>颗星星</span>
+          </div>
+          <div>
+            <strong id="realizedCount">0</strong>
+            <span>已实现</span>
+          </div>
+        </div>
+
+        <button class="primary-btn" id="openWriteModal">写一颗星星</button>
+        <button class="ghost-btn new-bottle-btn" id="clearAll">换一个新瓶子吧！</button>
+      </aside>
+
+      <section class="bottle-area">
+        <div class="bottle-hint">点击瓶中的星星，可以重新读到它</div>
+
+        <div class="sky-stars" id="skyStars"></div>
+
+        <div class="bottle-wrapper" id="bottleWrapper">
+          <!-- 手绘玻璃瓶 SVG -->
+          <svg class="hand-bottle" id="bottle" viewBox="0 0 360 520" aria-label="星愿瓶">
+            <defs>
+              <filter id="wobble">
+                <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" result="noise" />
+                <feDisplacementMap in="SourceGraphic" in2="noise" scale="2.2" />
+              </filter>
+
+              <linearGradient id="softBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#d9f5ff" stop-opacity="0.85"/>
+                <stop offset="45%" stop-color="#aee0ff" stop-opacity="0.55"/>
+                <stop offset="100%" stop-color="#f8fdff" stop-opacity="0.8"/>
+              </linearGradient>
+            </defs>
+
+            <!-- 瓶子淡蓝色涂抹底 -->
+            <path
+              class="bottle-fill"
+              d="M139 106
+                 C139 80, 222 78, 222 106
+                 L222 155
+                 C270 163, 303 199, 306 255
+                 C309 320, 298 421, 244 474
+                 C226 492, 134 492, 116 474
+                 C62 421, 51 318, 54 255
+                 C57 198, 90 163, 139 155
+                 Z"
+            />
+
+            <!-- 瓶口 -->
+            <path
+              class="bottle-line thick"
+              d="M125 83
+                 C141 75, 222 75, 238 84
+                 L238 111
+                 C216 116, 145 116, 125 111
+                 Z"
+            />
+
+            <!-- 瓶颈 -->
+            <path
+              class="bottle-line"
+              d="M141 111
+                 C160 116, 203 116, 222 111
+                 L222 157
+                 C204 164, 158 164, 139 157
+                 Z"
+            />
+
+            <!-- 瓶身轮廓 -->
+            <path
+              class="bottle-line thick"
+              d="M139 157
+                 C99 164, 62 194, 57 250
+                 C51 319, 64 421, 116 474
+                 C136 495, 225 495, 245 474
+                 C297 421, 310 319, 304 250
+                 C299 195, 263 164, 222 157"
+            />
+
+            <!-- 瓶底 -->
+            <path
+              class="bottle-line"
+              d="M111 477 C143 488, 218 488, 251 477"
+            />
+
+            <!-- 手绘高光 -->
+            <path
+              class="bottle-shine"
+              d="M98 212 C84 270, 90 371, 116 424"
+            />
+
+            <path
+              class="bottle-shine small"
+              d="M119 174 C96 193, 87 219, 84 245"
+            />
+
+            <!-- 轻微涂抹 -->
+            <path
+              class="blue-smudge smudge1"
+              d="M105 242 C132 207, 206 197, 249 229 C231 243, 153 251, 105 242Z"
+            />
+            <path
+              class="blue-smudge smudge2"
+              d="M112 348 C150 320, 222 330, 256 361 C215 378, 146 377, 112 348Z"
+            />
+          </svg>
+
+          <div class="wish-stars" id="wishStars"></div>
+        </div>
+      </section>
+
+      <aside class="note-card" id="noteCard">
+        <p class="note-empty">选择一颗星星，看看里面藏着什么。</p>
+      </aside>
+    </section>
+  </main>
+
+  <!-- 写星星弹窗 -->
+  <div class="modal-mask hidden" id="writeModal">
+    <div class="modal paper-card">
+      <button class="close-btn" id="closeWriteModal">×</button>
+
+      <h2>写进一颗星星里</h2>
+      <p class="modal-tip">不用署名，只留下这一刻真实的心情。</p>
+
+      <label class="label">选择类型</label>
+      <div class="type-list">
+        <button class="type-btn active" data-type="愿望">愿望</button>
+        <button class="type-btn" data-type="烦恼">烦恼</button>
+        <button class="type-btn" data-type="秘密">秘密</button>
+        <button class="type-btn" data-type="鼓励">鼓励</button>
+      </div>
+
+      <label class="label" for="wishInput">写下你的内容</label>
+      <textarea
+        id="wishInput"
+        maxlength="120"
+        placeholder="例如：希望明天 presentation 顺利；希望这段时间的焦虑可以慢慢变轻……"
+      ></textarea>
+
+      <div class="modal-actions">
+        <span id="charCount">0 / 120</span>
+        <button class="primary-btn" id="submitWish">折成星星</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 查看星星弹窗 -->
+  <div class="modal-mask hidden" id="readModal">
+    <div class="modal read-paper">
+      <button class="close-btn" id="closeReadModal">×</button>
+
+      <div class="read-type" id="readType">愿望</div>
+      <p class="read-content" id="readContent"></p>
+      <p class="read-time" id="readTime"></p>
+
+      <div class="modal-actions center">
+        <button class="primary-btn" id="realizeWish">
+          实现了，让它飞上天空
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="./script.js"></script>
+</body>
+</html>
